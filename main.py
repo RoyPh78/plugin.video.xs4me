@@ -5,59 +5,29 @@
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 
 import sys
+import os
 from urllib import urlencode
 from urlparse import parse_qsl
+import xbmc
 import xbmcgui
 import xbmcplugin
+import xbmcaddon
+import httplib
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
+import json
+
 
 # Get the plugin url in plugin:// notation.
 _url = sys.argv[0]
 # Get the plugin handle as an integer number.
 _handle = int(sys.argv[1])
 
-# Free sample videos are provided by www.vidsplay.com
-# Here we use a fixed set of properties simply for demonstrating purposes
-# In a "real life" plugin you will need to get info and links to video files/streams
-# from some web-site or online service.
-VIDEOS = {'Animals': [{'name': 'Crab',
-                       'thumb': 'http://www.vidsplay.com/vids/crab.jpg',
-                       'video': 'http://www.vidsplay.com/vids/crab.mp4',
-                       'genre': 'Animals'},
-                      {'name': 'Alligator',
-                       'thumb': 'http://www.vidsplay.com/vids/alligator.jpg',
-                       'video': 'http://www.vidsplay.com/vids/alligator.mp4',
-                       'genre': 'Animals'},
-                      {'name': 'Turtle',
-                       'thumb': 'http://www.vidsplay.com/vids/turtle.jpg',
-                       'video': 'http://www.vidsplay.com/vids/turtle.mp4',
-                       'genre': 'Animals'}
-                      ],
-            'Cars': [{'name': 'Postal Truck',
-                      'thumb': 'http://www.vidsplay.com/vids/us_postal.jpg',
-                      'video': 'http://www.vidsplay.com/vids/us_postal.mp4',
-                      'genre': 'Cars'},
-                     {'name': 'Traffic',
-                      'thumb': 'http://www.vidsplay.com/vids/traffic1.jpg',
-                      'video': 'http://www.vidsplay.com/vids/traffic1.avi',
-                      'genre': 'Cars'},
-                     {'name': 'Traffic Arrows',
-                      'thumb': 'http://www.vidsplay.com/vids/traffic_arrows.jpg',
-                      'video': 'http://www.vidsplay.com/vids/traffic_arrows.mp4',
-                      'genre': 'Cars'}
-                     ],
-            'Food': [{'name': 'Chicken',
-                      'thumb': 'http://www.vidsplay.com/vids/chicken.jpg',
-                      'video': 'http://www.vidsplay.com/vids/bbqchicken.mp4',
-                      'genre': 'Food'},
-                     {'name': 'Hamburger',
-                      'thumb': 'http://www.vidsplay.com/vids/hamburger.jpg',
-                      'video': 'http://www.vidsplay.com/vids/hamburger.mp4',
-                      'genre': 'Food'},
-                     {'name': 'Pizza',
-                      'thumb': 'http://www.vidsplay.com/vids/pizza.jpg',
-                      'video': 'http://www.vidsplay.com/vids/pizza.mp4',
-                      'genre': 'Food'}
-                     ]}
+addon = xbmcaddon.Addon()
+home = xbmc.translatePath(addon.getAddonInfo('path'))
+
 
 
 def get_url(**kwargs):
@@ -72,74 +42,58 @@ def get_url(**kwargs):
     return '{0}?{1}'.format(_url, urlencode(kwargs))
 
 
-def get_categories():
-    """
-    Get the list of video categories.
-
-    Here you can insert some parsing code that retrieves
-    the list of video categories (e.g. 'Movies', 'TV-shows', 'Documentaries' etc.)
-    from some site or server.
-
-    .. note:: Consider using `generator functions <https://wiki.python.org/moin/Generators>`_
-        instead of returning lists.
-
-    :return: The list of video categories
-    :rtype: list
-    """
-    return VIDEOS.iterkeys()
-
-
-def get_videos(category):
-    """
-    Get the list of videofiles/streams.
-
-    Here you can insert some parsing code that retrieves
-    the list of video streams in the given category from some site or server.
-
-    .. note:: Consider using `generators functions <https://wiki.python.org/moin/Generators>`_
-        instead of returning lists.
-
-    :param category: Category name
-    :type category: str
-    :return: the list of videos in the category
-    :rtype: list
-    """
-    return VIDEOS[category]
-
-
 def list_categories():
     """
     Create the list of video categories in the Kodi interface.
     """
     # Get video categories
-    categories = get_categories()
     # Iterate through categories
-    for category in categories:
-        # Create a list item with a text label and a thumbnail image.
-        list_item = xbmcgui.ListItem(label=category)
-        # Set graphics (thumbnail, fanart, banner, poster, landscape etc.) for the list item.
-        # Here we use the same image for all items for simplicity's sake.
-        # In a real-life plugin you need to set each image accordingly.
-        list_item.setArt({'thumb': VIDEOS[category][0]['thumb'],
-                          'icon': VIDEOS[category][0]['thumb'],
-                          'fanart': VIDEOS[category][0]['thumb']})
-        # Set additional info for the list item.
-        # Here we use a category name for both properties for for simplicity's sake.
-        # setInfo allows to set various information for an item.
-        # For available properties see the following link:
-        # http://mirrors.xbmc.org/docs/python-docs/15.x-isengard/xbmcgui.html#ListItem-setInfo
-        list_item.setInfo('video', {'title': category, 'genre': category})
-        # Create a URL for a plugin recursive call.
-        # Example: plugin://plugin.video.example/?action=listing&category=Animals
-        url = get_url(action='listing', category=category)
-        # is_folder = True means that this item opens a sub-list of lower level items.
-        is_folder = True
-        # Add our item to the Kodi virtual folder listing.
-        xbmcplugin.addDirectoryItem(_handle, url, list_item, is_folder)
+    # Create a list item with a text label and a thumbnail image.
+    list_item = xbmcgui.ListItem(label='LiveTV')
+    # Set graphics (thumbnail, fanart, banner, poster, landscape etc.) for the list item.
+    # Here we use the same image for all items for simplicity's sake.
+    # In a real-life plugin you need to set each image accordingly.
+    list_item.setArt({'thumb': os.path.join(home, 'icon.png'),
+                      'icon': os.path.join(home, 'icon.png'),
+                      'fanart': os.path.join(home, 'fanart.jpg')})
+    # Set additional info for the list item.
+    # Here we use a category name for both properties for for simplicity's sake.
+    # setInfo allows to set various information for an item.
+    # For available properties see the following link:
+    # http://mirrors.xbmc.org/docs/python-docs/15.x-isengard/xbmcgui.html#ListItem-setInfo
+    list_item.setInfo('video', {'title': 'LiveTV', 'genre': 'LiveTV'})
+    # Create a URL for a plugin recursive call.
+    # Example: plugin://plugin.video.xs4me/?action=listing&category=Animals
+    url = get_url(action='listing', category='LiveTV')
+    # is_folder = True means that this item opens a sub-list of lower level items.
+    is_folder = True
+    # Add our item to the Kodi virtual folder listing.
+    xbmcplugin.addDirectoryItem(_handle, url, list_item, is_folder)
     # Add a sort method for the virtual folder items (alphabetically, ignore articles)
     xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
     # Finish creating a virtual folder.
     xbmcplugin.endOfDirectory(_handle)
+
+
+def get_icon(channel):
+    """
+    Get icon path.
+    
+    return: icon url
+    rtype: str
+    """
+    
+    _url = os.path.join(home, 'icon.png')
+    
+    conn = httplib.HTTPSConnection("webtv.xs4all.nl")
+    conn.request("HEAD", "/images/channels/" + channel + ".png")
+    res = conn.getresponse()
+    if res.status == 200:
+	headers = res.getheaders()
+	content_type = [x[1] for x in headers if x[0] == 'content-type'][0]
+        if content_type == 'image/png':
+	    _url = "https://webtv.xs4all.nl/images/channels/" + channel + ".png"
+    return _url	    
 
 
 def list_videos(category):
@@ -150,23 +104,26 @@ def list_videos(category):
     :type category: str
     """
     # Get the list of videos in the category.
-    videos = get_videos(category)
+    url_channels="https://webtv-api.xs4all.nl/2/listchannels.json"
+    response_channels = urlopen(url_channels)
+    data = json.load(response_channels)
+    sorted_channels = sorted(data['channels'], key = lambda x: x['number'])
     # Iterate through videos.
-    for video in videos:
+    for video in sorted_channels:
         # Create a list item with a text label and a thumbnail image.
         list_item = xbmcgui.ListItem(label=video['name'])
         # Set additional info for the list item.
-        list_item.setInfo('video', {'title': video['name'], 'genre': video['genre']})
+        list_item.setInfo('video', {'title': video['name'], 'genre': 'TV'})
         # Set graphics (thumbnail, fanart, banner, poster, landscape etc.) for the list item.
         # Here we use the same image for all items for simplicity's sake.
         # In a real-life plugin you need to set each image accordingly.
-        list_item.setArt({'thumb': video['thumb'], 'icon': video['thumb'], 'fanart': video['thumb']})
+        list_item.setArt({'thumb': get_icon(video['id']), 'icon': get_icon(video['id']), 'fanart': get_icon(video['id'])})
         # Set 'IsPlayable' property to 'true'.
         # This is mandatory for playable items!
         list_item.setProperty('IsPlayable', 'true')
         # Create a URL for a plugin recursive call.
-        # Example: plugin://plugin.video.example/?action=play&video=http://www.vidsplay.com/vids/crab.mp4
-        url = get_url(action='play', video=video['video'])
+        # Example: plugin://plugin.video.xs4me/?action=play&video=http://www.vidsplay.com/vids/crab.mp4
+        url = get_url(action='play', video=video['id'])
         # Add the list item to a virtual Kodi folder.
         # is_folder = False means that this item won't open any sub-list.
         is_folder = False
@@ -178,17 +135,42 @@ def list_videos(category):
     xbmcplugin.endOfDirectory(_handle)
 
 
-def play_video(path):
+def play_video(channel):
     """
     Play a video by the provided path.
 
     :param path: Fully-qualified video URL
     :type path: str
     """
-    # Create a playable item with a path to play.
-    play_item = xbmcgui.ListItem(path=path)
-    # Pass the item to the Kodi player.
-    xbmcplugin.setResolvedUrl(_handle, True, listitem=play_item)
+    _url_channels="https://webtv-api.xs4all.nl/2/listchannels.json"
+    _response_channels = urlopen(_url_channels)
+    _data = json.load(_response_channels)
+    _data = [x for x in _data['channels'] if x['id'] == channel][0]
+    _title = _data['name']
+
+    _url_channel="https://webtv-api.xs4all.nl/2/channel/" + channel + "/dashwv/medium.json"
+    _response_channel = urlopen(_url_channel)
+    _data = json.load(_response_channel)
+
+    listitem = xbmcgui.ListItem(label=_title, path=_data['streamurl'])
+
+    #if extern or trailer == '1':
+    #    listitem.setInfo('video', Info)
+
+    #if 'adaptive' in is_addon:
+    #    listitem.setProperty('inputstream.adaptive.manifest_type', 'mpd')
+    
+    listitem.setProperty('inputstream.adaptive.manifest_type', 'mpd')
+
+    #Log('Using %s Version:%s' %(is_addon, xbmcaddon.Addon(is_addon).getAddonInfo('version')))
+    listitem.setArt({'thumb': get_icon(channel)})
+    #listitem.setSubtitles(subs)
+    if 'laurl' in _data.keys():
+        listitem.setProperty('inputstream.adaptive.license_type', 'com.widevine.alpha')
+        listitem.setProperty('inputstream.adaptive.license_key', _data['laurl'])
+	
+    listitem.setProperty('inputstreamaddon', 'inputstream.adaptive')
+    xbmcplugin.setResolvedUrl(_handle, True, listitem=listitem)
 
 
 def router(paramstring):
@@ -219,7 +201,6 @@ def router(paramstring):
         # If the plugin is called from Kodi UI without any parameters,
         # display the list of video categories
         list_categories()
-
 
 if __name__ == '__main__':
     # Call the router function and pass the plugin call parameters to it.

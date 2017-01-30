@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.example"
-version="2.1.0"
-name="Example Kodi Video Plugin"
-provider-name="Roman_V_M">
+<addon id="plugin.video.xs4me"
+version="1.0.0"
+name="XS4All Live TV Kodi Video Plugin"
+provider-name="RoyPh78">
 <requires>
   <import addon="xbmc.python" version="2.24.0"/>
 </requires>
@@ -10,16 +10,15 @@ provider-name="Roman_V_M">
   <provides>video</provides>
 </extension>
 <extension point="xbmc.addon.metadata">
-  <summary lang="en">Example Kodi Video Plugin</summary>
-  <description lang="en">An example video plugin for Kodi mediacenter.</description>
-  <disclaimer lang="en">Free sample videos are provided by www.vidsplay.com.</disclaimer>
+  <summary lang="en">XS4All Live TV Kodi Video Plugin</summary>
+  <description lang="en">XS4All Live TV video plugin for Kodi mediacenter.</description>
   <assets>
     <icon>icon.png</icon>
     <fanart>fanart.jpg</fanart>
-    <screenshot>resources\screenshot-01.jpg</screenshot>
+    <!-- <screenshot>resources\screenshot-01.jpg</screenshot>
     <screenshot>resources\screenshot-02.jpg</screenshot>
-    <screenshot>resources\screenshot-03.jpg</screenshot>    
+    <screenshot>resources\screenshot-03.jpg</screenshot>    -->
   </assets>
-  <news>Updated with latest artwork metadata</news>
+  <news>Initial (non working!) version</news>
 </extension>
 </addon>
