@@ -18,6 +18,7 @@ try:
 except ImportError:
     from urllib2 import urlopen
 import json
+import requests
 
 
 # Get the plugin url in plugin:// notation.
