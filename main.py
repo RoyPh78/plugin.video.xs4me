@@ -83,16 +83,25 @@ def get_icon(channel):
     rtype: str
     """
     
-    _url = os.path.join(home, 'icon.png')
+    _check_icon = False
     
-    conn = httplib.HTTPSConnection("webtv.xs4all.nl")
-    conn.request("HEAD", "/images/channels/" + channel + ".png")
-    res = conn.getresponse()
-    if res.status == 200:
-	headers = res.getheaders()
-	content_type = [x[1] for x in headers if x[0] == 'content-type'][0]
-        if content_type == 'image/png':
-	    _url = "https://webtv.xs4all.nl/images/channels/" + channel + ".png"
+    _url = os.path.join(home, 'icon.png')
+    _icon_server = "webtv.xs4all.nl"
+    _correct_icon_path = "/images/channels/" + channel + ".png"
+    _correct_icon_url = "https://" + _icon_server + _correct_icon_path
+    
+    if _check_icon:
+        conn = httplib.HTTPSConnection(_icon_server)
+        conn.request("HEAD", _correct_icon_path)
+        res = conn.getresponse()
+        if res.status == 200:
+	    headers = res.getheaders()
+	    content_type = [x[1] for x in headers if x[0] == 'content-type'][0]
+            if content_type == 'image/png':
+	        _url = _correct_icon_url
+    else:
+        _url = _correct_icon_url
+	
     return _url	    
 
 
