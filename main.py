@@ -176,11 +176,11 @@ def play_video(channel):
     #listitem.setSubtitles(subs)
     if 'laurl' in _data.keys():
         # Template URL|Additional Header|Post-Body|Response Format
-	# Additional Header is not required; leave empty
-	# Post-Body: R{SSM} -> Raw SendSessionMessage (== Raw Bytes in Post Body)
-	# Response format: by default: expect raw bytes in response payload -> leave empty
+        # Additional Header is not required; leave empty
+        # Post-Body: R{SSM} -> Raw SendSessionMessage (== Raw Bytes in Post Body)
+        # Response format: by default: expect raw bytes in response payload -> leave empty
         _license_key = _data['laurl'] + "||R{SSM}|"
-	
+        
         listitem.setProperty('inputstream.adaptive.license_type', 'com.widevine.alpha')
         listitem.setProperty('inputstream.adaptive.license_key', _license_key)
 	
