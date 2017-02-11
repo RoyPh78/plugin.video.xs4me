@@ -1,15 +1,10 @@
-# Simple example plugin for Kodi mediacenter
+# Simple XS4All Livetv  plugin for Kodi mediacenter
 
-This is a simple yet fully functional example of a video plugin for [Kodi](http://kodi.tv) mediacenter.
-Please read the comments in the plugin code for more details.
-An installable .zip can be downloaded from "[Releases](https://github.com/romanvm/plugin.video.example/releases)" tab.
+This is a simple video plugin to view Xs4all webtv streams in [Kodi](http://kodi.tv) mediacenter.
+An installable .zip can be downloaded from "[Releases](https://github.com/RoyPh78/plugin.video.xs4me/releases)" tab.
 
-**Note**: the purpose of this example plugin is to show you how to organize and play your media content in Kodi.
-The methods of obtaining such content, for example parsing websites or working with various APIs,
-are beyond the scope of this example.
+**Warning**: the "master" branch is only compatible with Kodi 17.0 (Krypton) and above, with addon inputstream.adaptive enabled. Older versions are not supported.
 
-The plugin uses a pre-defined set of free sample videos from [www.vidsplay.com](http://www.vidsplay.com/).
-
-**Warning**: the "master" branch is only compatible with Kody 16.0 (Jarvis) and above. For older versions see the "legacy" branch.
+**Warning**: the majority of the channels is only viewable for XS4All clients, which are connected via the XS4All Internet. To view these channels, also libwidevinecdm and libssd_wv must be installed. These libraries are not included in this plugin. 
 
 License: [GPL v.3](http://www.gnu.org/copyleft/gpl.html)
